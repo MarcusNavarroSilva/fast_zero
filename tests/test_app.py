@@ -45,9 +45,18 @@ def test_return_users(client):
         'users': [
             {
                 'username': 'alice',
-                'password': 'secret',
                 'email': 'alice@uno.com',
                 'id': 1,
             }
         ]
+    }
+
+
+def test_att_users(client):
+    response = client.delete('/users/1')
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {
+        'username': 'alice',
+        'email': 'alice@uno.com',
+        'id': 1,
     }
