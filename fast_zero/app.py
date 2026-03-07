@@ -33,6 +33,16 @@ def create_user(user: Userschema):
 def read_users():
     return {'users': database}
 
+@app.get('/users/{user_id}', response_model=Userpublic)
+def read_user(user_id: int):
+    if user_id < 1 or user_id > len(database):
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND, detail='Usuario não encontrado'
+        )
+    else:
+    
+        return database[user_id - 1]
+
 
 @app.put(
     '/users/{user_id}', status_code=HTTPStatus.OK, response_model=Userpublic
@@ -43,13 +53,13 @@ def update_user(user_id: int, user: Userschema):
             status_code=HTTPStatus.NOT_FOUND, detail='Usuario não encontrado'
         )
     else:
-        user_with_id = UserDatabase(**user.model_dump(), id=len(database) + 1)
+        user_with_id = UserDatabase(**user.model_dump(), id=user_id)
         database[user_id - 1] = user_with_id
         return user_with_id
 
 
 @app.delete(
-    '/users/{user_id}', status_code=HTTPStatus.OK, response_model=Userpublic
+    '/users/{user_id}', status_code=HTTPStatus.OK, response_model=Message
 )
 def delete_user(user_id: int):
     if user_id < 1 or user_id > len(database):
@@ -57,4 +67,5 @@ def delete_user(user_id: int):
             status_code=HTTPStatus.NOT_FOUND, detail='Usuario não encontrado'
         )
     else:
-        return database.pop(user_id - 1)
+        database.pop(user_id - 1)
+        return 'usuário deletado'
