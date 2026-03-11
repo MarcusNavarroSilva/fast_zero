@@ -74,11 +74,12 @@ def test_delete_user(client):
 
     assert response.status_code == HTTPStatus.NOT_FOUND
 
+
 def test_get_user_should_return_not_found__exercicio(client):
     response = client.get('/users/666')
 
     assert response.status_code == HTTPStatus.NOT_FOUND
-    assert response.json() == {'detail': 'User not found'}
+    assert response.json() == {'detail': 'Usuario não encontrado'}
 
 
 def test_get_user___exercicio(client):
@@ -86,7 +87,7 @@ def test_get_user___exercicio(client):
 
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {
-        'username': 'bob',
-        'email': 'bob@example.com',
+        'username': 'alice',
+        'email': 'alice@uno.com',
         'id': 1,
     }

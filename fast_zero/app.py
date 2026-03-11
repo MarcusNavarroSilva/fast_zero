@@ -33,6 +33,7 @@ def create_user(user: Userschema):
 def read_users():
     return {'users': database}
 
+
 @app.get('/users/{user_id}', response_model=Userpublic)
 def read_user(user_id: int):
     if user_id < 1 or user_id > len(database):
@@ -40,7 +41,6 @@ def read_user(user_id: int):
             status_code=HTTPStatus.NOT_FOUND, detail='Usuario não encontrado'
         )
     else:
-    
         return database[user_id - 1]
 
 
