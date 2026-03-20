@@ -1,3 +1,5 @@
+from dataclasses import asdict
+
 from sqlalchemy import select
 
 from fast_zero.models import User
@@ -19,7 +21,7 @@ def test_create_user(session, mock_db_time):
 
         user = session.scalar(select(User).where(User.username == 'teste'))
 
-    assert (user) == {
+    assert asdict(user) == {
         'id': 1,
         'username': 'teste',
         'email': 'exemplo@exemplo.com',

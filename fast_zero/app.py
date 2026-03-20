@@ -1,7 +1,10 @@
 from http import HTTPStatus
 
 from fastapi import FastAPI, HTTPException
+from sqlalchemy import select
 
+from fast_zero.database import get_session
+from fast_zero.models import User
 from fast_zero.schemas import (
     Message,
     UserDatabase,
@@ -24,9 +27,29 @@ def read_root():
 
 @app.post('/users/', status_code=HTTPStatus.CREATED, response_model=Userpublic)
 def create_user(user: Userschema):
-    user_with_id = UserDatabase(**user.model_dump(), id=len(database) + 1)
-    database.append(user_with_id)
-    return user_with_id
+    session = get_session()
+    db_user = session.scalar(
+        select(User).where(
+            (User.username == user.username) | (User.email == user.email)
+        )
+    )
+    if db_user:
+        if db_user.username == user.username:
+            raise HTTPException(
+                HTTPStatus.CONFLICT, detail='Nome de usuário já existe'
+            )
+        elif db_user.email == user.email:
+            raise HTTPException(
+                HTTPStatus.CONFLICT, detail='Email já cadastrado'
+            )
+    db_user = User(
+        username=user.username, email=user.email, password=user.password
+    )
+    session.add(db_user)
+    session.commit()
+    session.refresh(db_user)
+
+    return db_user
 
 
 @app.get('/users/', status_code=HTTPStatus.OK, response_model=Userlist)
